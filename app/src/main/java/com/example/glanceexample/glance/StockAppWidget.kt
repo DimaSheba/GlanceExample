@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -37,9 +36,6 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.Locale
 
-private val smallMode = DpSize(100.dp, 50.dp)
-private val mediumMode = DpSize(200.dp, 100.dp)
-
 class StockAppWidget : GlanceAppWidget() {
 
     override val sizeMode = SizeMode.Exact
@@ -48,10 +44,7 @@ class StockAppWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         if (job == null) {
-            job = startUpdateJob(
-                Duration.ofSeconds(20).toMillis(),
-                context
-            )
+            job = startUpdateJob(Duration.ofSeconds(20).toMillis(), context)
         }
         provideContent {
             GlanceTheme {
@@ -74,9 +67,10 @@ class StockAppWidget : GlanceAppWidget() {
     fun GlanceContent() {
         val stateCount by PriceDataRepo.currentPrice.collectAsState()
         val size = LocalSize.current
-        when (size) {
-            smallMode -> Small(stateCount)
-            mediumMode -> Medium(stateCount)
+        if (size.width > 150.dp) {
+            Medium(stateCount)
+        } else {
+            Small(stateCount)
         }
     }
 
