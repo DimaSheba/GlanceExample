@@ -13,6 +13,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
@@ -83,6 +84,7 @@ class StockAppWidget : GlanceAppWidget() {
     private fun Small(stateCount: Float) {
         Column(
             modifier = GlanceModifier
+                .clickable { refreshPrice() }
                 .fillMaxSize()
                 .background(GlanceTheme.colors.background)
                 .padding(8.dp)
@@ -96,6 +98,7 @@ class StockAppWidget : GlanceAppWidget() {
         Column(
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
             modifier = GlanceModifier
+                .clickable { refreshPrice() }
                 .fillMaxSize()
                 .cornerRadius(15.dp)
                 .background(GlanceTheme.colors.background)
@@ -142,5 +145,11 @@ class StockAppWidget : GlanceAppWidget() {
             text = "${PriceDataRepo.change} %",
             style = textStyle
         )
+    }
+
+    private fun refreshPrice() {
+        CoroutineScope(Dispatchers.Default).launch {
+            PriceDataRepo.update()
+        }
     }
 }
